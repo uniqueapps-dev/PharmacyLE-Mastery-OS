@@ -10,27 +10,97 @@
 <meta name="application-name" content="PharmacyLE OS">
 <meta name="theme-color" content="#070c18">
 <meta name="description" content="PharmacyLE Mastery OS — Exam preparation system for PEBC, PSI, and KAPS">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>PharmacyLE Mastery OS</title>
 
-<!-- PWA Manifest (inline data URI — single file) -->
-<link rel="manifest" href="data:application/manifest+json,{
-  %22name%22:%22PharmacyLE Mastery OS%22,
-  %22short_name%22:%22PharmacyLE OS%22,
-  %22description%22:%22Exam preparation system for PEBC, PSI, and KAPS%22,
-  %22start_url%22:%22.%22,
-  %22display%22:%22standalone%22,
-  %22background_color%22:%22%23070c18%22,
-  %22theme_color%22:%22%23070c18%22,
-  %22orientation%22:%22portrait%22,
-  %22icons%22:[{%22src%22:%22data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='32' fill='%23070c18'/%3E%3Ctext x='96' y='130' font-family='Arial Black,sans-serif' font-size='100' font-weight='900' text-anchor='middle' fill='%233b82f6'%3ERx%3C/text%3E%3C/svg%3E%22,%22sizes%22:%22192x192%22,%22type%22:%22image/svg+xml%22}]
-}">
+<!-- PWA Manifest injected via JS (avoids data-URI browser restrictions) -->
+<script>
+(function(){
+  // Build icon as canvas-generated PNG blob URL
+  function makeIcon(size) {
+    try {
+      const c = document.createElement('canvas');
+      c.width = c.height = size;
+      const ctx = c.getContext('2d');
+      // Background
+      const r = size * 0.18;
+      ctx.beginPath();
+      ctx.moveTo(r,0); ctx.lineTo(size-r,0);
+      ctx.quadraticCurveTo(size,0,size,r);
+      ctx.lineTo(size,size-r);
+      ctx.quadraticCurveTo(size,size,size-r,size);
+      ctx.lineTo(r,size);
+      ctx.quadraticCurveTo(0,size,0,size-r);
+      ctx.lineTo(0,r);
+      ctx.quadraticCurveTo(0,0,r,0);
+      ctx.closePath();
+      ctx.fillStyle = '#070c18';
+      ctx.fill();
+      // Blue accent bar top
+      ctx.fillStyle = '#3b82f6';
+      ctx.fillRect(size*0.12, size*0.08, size*0.76, size*0.06);
+      // "Rx" text
+      ctx.fillStyle = '#3b82f6';
+      ctx.font = `900 ${Math.round(size*0.42)}px Arial Black, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('Rx', size/2, size*0.52);
+      // Subtitle dots
+      ctx.fillStyle = '#1e2d45';
+      [0.35,0.5,0.65].forEach(x => {
+        ctx.beginPath();
+        ctx.arc(size*x, size*0.78, size*0.04, 0, Math.PI*2);
+        ctx.fill();
+      });
+      ctx.fillStyle = '#10b981';
+      ctx.beginPath();
+      ctx.arc(size*0.5, size*0.78, size*0.04, 0, Math.PI*2);
+      ctx.fill();
+      return c.toDataURL('image/png');
+    } catch(e) { return ''; }
+  }
 
-<!-- Favicon SVG (inline — works offline) -->
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23070c18'/><text x='16' y='23' font-family='Arial Black,sans-serif' font-size='17' font-weight='900' text-anchor='middle' fill='%233b82f6'>Rx</text></svg>">
+  const icon192 = makeIcon(192);
+  const icon512 = makeIcon(512);
 
-<!-- Apple Touch Icon (inline SVG) -->
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' rx='40' fill='%23070c18'/><text x='90' y='125' font-family='Arial Black,sans-serif' font-size='90' font-weight='900' text-anchor='middle' fill='%233b82f6'>Rx</text></svg>">
+  const manifest = {
+    name: 'PharmacyLE Mastery OS',
+    short_name: 'PharmacyLE OS',
+    description: 'Exam preparation system for PEBC, PSI, and KAPS',
+    start_url: './',
+    display: 'standalone',
+    background_color: '#070c18',
+    theme_color: '#070c18',
+    orientation: 'portrait-primary',
+    icons: [
+      { src: icon192, sizes: '192x192', type: 'image/png' },
+      { src: icon512, sizes: '512x512', type: 'image/png', purpose: 'any' },
+      { src: icon512, sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+    ]
+  };
+
+  const blob = new Blob([JSON.stringify(manifest)], {type:'application/manifest+json'});
+  const url  = URL.createObjectURL(blob);
+  const link = document.createElement('link');
+  link.rel  = 'manifest';
+  link.href = url;
+  document.head.appendChild(link);
+
+  // Apple touch icon
+  if (icon192) {
+    const al = document.createElement('link');
+    al.rel  = 'apple-touch-icon';
+    al.href = icon192;
+    document.head.appendChild(al);
+  }
+
+  // Favicon
+  const fl = document.createElement('link');
+  fl.rel  = 'icon';
+  fl.type = 'image/png';
+  fl.href = makeIcon(32);
+  document.head.appendChild(fl);
+})();
+</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -1022,6 +1092,89 @@ body {
 }
 
 /* ══════════════════════════════════════════════════════════════
+   CONTINUATION SYSTEM — CSS
+══════════════════════════════════════════════════════════════ */
+.continuation-card {
+  background: linear-gradient(135deg,#0d1f3c,#0d2d1a);
+  border:1px solid #1e3a5f; border-radius:var(--radius);
+  padding:14px 16px; margin-bottom:12px; display:none;
+}
+.continuation-card.visible { display:block; }
+.continuation-label {
+  font-size:10px; font-weight:700; text-transform:uppercase;
+  letter-spacing:1.5px; color:var(--cyan); margin-bottom:6px;
+}
+.continuation-title { font-size:14px; font-weight:600; margin-bottom:4px; }
+.continuation-sub { font-size:12px; color:var(--muted2); margin-bottom:10px; }
+.continuation-progress {
+  height:4px; background:var(--border); border-radius:2px;
+  overflow:hidden; margin-bottom:10px;
+}
+.continuation-fill { height:100%; background:var(--cyan); border-radius:2px; transition:width 0.5s; }
+.continuation-actions { display:flex; gap:8px; }
+
+/* In-progress badge on task items */
+.task-in-progress {
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:10px; font-weight:700; padding:2px 8px; border-radius:4px;
+  background:#0d2d2d; color:var(--cyan); border:1px solid #1a4d4d;
+  text-transform:uppercase; letter-spacing:0.5px; margin-top:5px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   API KEY MANAGER — CSS
+══════════════════════════════════════════════════════════════ */
+.api-modal-overlay {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,0.88); z-index:350;
+  align-items:flex-end; justify-content:center;
+}
+.api-modal-overlay.open { display:flex; }
+.api-modal {
+  background:var(--surface); border-radius:var(--radius) var(--radius) 0 0;
+  width:100%; padding:24px 16px calc(env(safe-area-inset-bottom,0px)+32px);
+  border:1px solid var(--border); max-height:85vh; overflow-y:auto;
+}
+.api-modal-handle { width:40px; height:4px; background:var(--border); border-radius:2px; margin:0 auto 18px; }
+.api-modal-title { font-family:var(--font-head); font-size:20px; font-weight:800; margin-bottom:4px; }
+.api-modal-sub { font-size:13px; color:var(--muted2); margin-bottom:20px; line-height:1.6; }
+.api-benefit-row {
+  display:flex; gap:10px; align-items:flex-start;
+  padding:9px 0; border-bottom:1px solid var(--border);
+}
+.api-benefit-row:last-of-type { border-bottom:none; }
+.api-benefit-icon { font-size:18px; flex-shrink:0; }
+.api-benefit-text { flex:1; }
+.api-benefit-title { font-size:13px; font-weight:600; margin-bottom:2px; }
+.api-benefit-desc { font-size:12px; color:var(--muted2); }
+.api-key-field {
+  width:100%; background:var(--card2); border:1px solid var(--border);
+  color:var(--text); border-radius:10px; padding:12px 13px;
+  font-family:var(--font-mono); font-size:13px; outline:none;
+  margin-top:14px; margin-bottom:6px;
+}
+.api-key-field:focus { border-color:var(--blue); }
+.api-status-row {
+  display:flex; align-items:center; gap:8px; margin-bottom:14px;
+  font-size:13px; font-weight:600;
+}
+.api-status-dot {
+  width:8px; height:8px; border-radius:50%;
+}
+.api-status-dot.connected { background:var(--green); }
+.api-status-dot.offline { background:var(--muted); }
+
+/* Settings API key section upgrade */
+.api-settings-section { padding:14px 0; border-bottom:1px solid var(--border); }
+.api-settings-key-row { display:flex; gap:8px; margin-top:10px; }
+.api-settings-input {
+  flex:1; background:var(--card2); border:1px solid var(--border);
+  color:var(--text); border-radius:8px; padding:9px 12px;
+  font-family:var(--font-mono); font-size:12px; outline:none;
+}
+.api-settings-input:focus { border-color:var(--blue); }
+
+/* ══════════════════════════════════════════════════════════════
    BEHAVIOR REINFORCEMENT ENGINE (BRE) STYLES
 ══════════════════════════════════════════════════════════════ */
 
@@ -1646,6 +1799,20 @@ body {
       <div class="what-next-text" id="what-next-text">Complete your daily mission to unlock tomorrow's plan.</div>
     </div>
 
+    <!-- Continuation Card (shown when topic was partially studied) -->
+    <div class="continuation-card" id="continuation-card">
+      <div class="continuation-label">⏱ Continue Where You Stopped</div>
+      <div class="continuation-title" id="cont-title">Topic</div>
+      <div class="continuation-sub" id="cont-sub">Pick up from where you left off</div>
+      <div class="continuation-progress">
+        <div class="continuation-fill" id="cont-fill" style="width:0%"></div>
+      </div>
+      <div class="continuation-actions">
+        <button class="btn btn-primary btn-sm" onclick="resumeFromContinuation()">▶ Resume</button>
+        <button class="btn btn-ghost btn-sm" onclick="dismissContinuation()">Dismiss</button>
+      </div>
+    </div>
+
     <!-- Weak Alert -->
     <div class="weak-alert" id="weak-alert" style="display:none;">
       <span class="weak-badge">WEAK</span>
@@ -1967,12 +2134,18 @@ body {
             <option value="4">4 hr</option>
           </select>
         </div>
-        <div class="setting-row">
-          <div>
-            <div class="setting-label">API Key</div>
-            <div class="setting-sub">OpenRouter (AI questions)</div>
+        <div class="api-settings-section">
+          <div class="setting-label">AI Features (OpenRouter API Key)</div>
+          <div class="api-status-row" style="margin-top:6px;" id="settings-api-status-row">
+            <div class="api-status-dot offline" id="settings-api-dot"></div>
+            <span id="settings-api-status">Not Connected — offline mode</span>
           </div>
-          <button class="btn btn-ghost btn-sm" onclick="updateAPIKey()">Update</button>
+          <div class="api-settings-key-row">
+            <input class="api-settings-input" id="settings-api-input" type="password" placeholder="sk-or-... OpenRouter key">
+            <button class="btn btn-primary btn-sm" onclick="saveAPIKeyFromSettings()">Save</button>
+            <button class="btn btn-ghost btn-sm" onclick="removeAPIKey()">Remove</button>
+          </div>
+          <div style="font-size:11px;color:var(--muted2);margin-top:6px;">Key stored locally. Get free key at openrouter.ai</div>
         </div>
         <div class="setting-row">
           <div>
@@ -2320,6 +2493,56 @@ The system will extract concepts, map to curriculum, generate MCQs, summaries, a
     <button class="btn btn-primary" onclick="closeEOD()" style="margin-top:16px;">
       ✓ Close — See You Tomorrow
     </button>
+  </div>
+</div>
+
+<!-- API KEY MANAGER MODAL -->
+<div class="api-modal-overlay" id="api-modal-overlay">
+  <div class="api-modal" onclick="event.stopPropagation()">
+    <div class="api-modal-handle"></div>
+    <div class="api-modal-title">Enable AI Features</div>
+    <div class="api-modal-sub">
+      Add an OpenRouter API key to unlock AI-powered content generation, MCQ creation, and live study material. Your key is stored locally and never sent anywhere except OpenRouter.
+    </div>
+
+    <div style="margin-bottom:16px;">
+      <div class="api-benefit-row">
+        <span class="api-benefit-icon">🧠</span>
+        <div class="api-benefit-text">
+          <div class="api-benefit-title">Auto-generate topic content</div>
+          <div class="api-benefit-desc">Full study modules built instantly for any topic</div>
+        </div>
+      </div>
+      <div class="api-benefit-row">
+        <span class="api-benefit-icon">📝</span>
+        <div class="api-benefit-text">
+          <div class="api-benefit-title">Generate exam-quality MCQs</div>
+          <div class="api-benefit-desc">Unlimited practice questions on demand</div>
+        </div>
+      </div>
+      <div class="api-benefit-row">
+        <span class="api-benefit-icon">📦</span>
+        <div class="api-benefit-text">
+          <div class="api-benefit-title">Smart content processing</div>
+          <div class="api-benefit-desc">Paste your notes → system extracts key points and builds questions</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="api-status-row" id="api-modal-status-row">
+      <div class="api-status-dot offline" id="api-modal-dot"></div>
+      <span id="api-modal-status-text">No API key — offline mode active</span>
+    </div>
+
+    <input class="api-key-field" id="api-modal-key-input" type="password" placeholder="sk-or-... (OpenRouter API key)">
+    <div style="font-size:11px;color:var(--muted2);margin-bottom:16px;">
+      Get a free key at <strong style="color:var(--blue);">openrouter.ai</strong> — use GPT-4o model for best results.
+    </div>
+
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-primary" style="flex:2" onclick="saveAPIKeyFromModal()">Save & Enable AI</button>
+      <button class="btn btn-ghost" style="flex:1" onclick="closeAPIModal()">Offline Mode</button>
+    </div>
   </div>
 </div>
 
@@ -3135,6 +3358,8 @@ const DEFAULT_STATE = {
   iceMCQCount: 0,
   iceConceptCount: 0,
   lieGeneratedTopics: {},
+  continuationData: {},   // {topicId: {lastSection, timeSpent, coveragePct, date}}
+  apiKeyDismissed: false, // track if user dismissed API key prompt
 };
 
 function loadState() {
@@ -3198,6 +3423,8 @@ function launchApp() {
   initICE();
   initASCE();
   restoreLIETopics();
+  initAPIKeyManager();
+  renderContinuationCard();
   // Show Guide on first launch
   if (!STATE.guideSeen) {
     setTimeout(() => openGuide(), 400);
@@ -3215,6 +3442,8 @@ function checkStreakAndMissed() {
     document.getElementById('recovery-card').style.display = 'block';
     document.getElementById('missed-days').textContent = STATE.missedDays;
   }
+  // Continuation: reassign incomplete weak topics each new day
+  continuationAdaptiveReassign();
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -3302,12 +3531,16 @@ function renderMission() {
                    onclick="event.stopPropagation();startTopicQuiz('${task.topicId}');">🎯 Start Drill</button>`
               : `<button class="btn btn-ghost btn-sm" style="margin-top:8px;width:auto;font-size:11px;padding:5px 10px;"
                    onclick="event.stopPropagation();goPage('practice');setPracticeTab('daily');">🎯 Start Drill</button>`));
+    const contData = (STATE.continuationData || {})[task.topicId];
+    const inProgressBadge = (task.topicId && contData && contData.coveragePct > 0 && contData.coveragePct < 100)
+      ? `<span class="task-in-progress">⏱ ${contData.coveragePct}% covered</span>` : '';
     return `<div class="task-item ${done ? 'done' : ''}" onclick="toggleTask('${task.id}')">
       <div class="task-check">${done ? `<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>` : ''}</div>
       <div class="task-body">
         <div class="task-title">${task.title}</div>
         <div class="task-meta">${task.meta}</div>
         <span class="task-tag tag-${task.tag}">${task.tag.toUpperCase()}</span>
+        ${inProgressBadge}
         ${studyBtn}
       </div>
     </div>`;
@@ -3340,6 +3573,9 @@ function renderMission() {
   const readiness = Math.min(100, Math.round(acc * 0.85 + (STATE.streak / 30) * 15));
   document.getElementById('readiness-pct').textContent = readiness ? readiness + '%' : '—';
   document.getElementById('readiness-fill').style.width = readiness + '%';
+
+  // Continuation system
+  renderContinuationCard();
 }
 
 function toggleTask(taskId) {
@@ -4061,6 +4297,11 @@ function renderLibrary() {
   document.getElementById('settings-exam-sel').value = STATE.profile.exam;
   document.getElementById('settings-exam-val').textContent = STATE.profile.exam;
   document.getElementById('settings-hours-sel').value = STATE.profile.hours;
+  // API key status
+  if (typeof renderAPIKeyStatus === 'function') renderAPIKeyStatus();
+  // Sync API key field
+  const inp = document.getElementById('settings-api-input');
+  if (inp && STATE.profile.apiKey) inp.value = STATE.profile.apiKey;
 }
 
 function renderResources() {
@@ -4185,8 +4426,8 @@ function switchExam(exam) { STATE.profile.exam = exam; saveState(); buildTopicSe
 function updateExamTarget(val) { STATE.profile.exam = val; document.getElementById('exam-switcher').value = val; document.getElementById('settings-exam-val').textContent = val; saveState(); buildTopicSelector(); renderMission(); renderLibrary(); }
 function updateHours(val) { STATE.profile.hours = parseInt(val); saveState(); }
 function updateAPIKey() {
-  const key = prompt('Enter your OpenRouter API key:');
-  if (key !== null) { STATE.profile.apiKey = key.trim(); saveState(); alert('API key updated.'); }
+  // Legacy — now handled by API Key Manager; route to settings
+  goPage('library'); setLibTab('settings');
 }
 function confirmReset() {
   if (confirm('Reset ALL data? This cannot be undone.')) { localStorage.removeItem('rxos_state'); location.reload(); }
@@ -4761,6 +5002,9 @@ function openStudyView(topicId) {
 
   // Log study session — update retention tracking
   updateRetentionOnStudy(topicId);
+
+  // Continuation: record session start for this topic
+  continuationStartSession(topicId);
 }
 
 function openStudyViewPlaceholder(topicId) {
@@ -4799,6 +5043,10 @@ function openStudyViewPlaceholder(topicId) {
 }
 
 function closeStudyView() {
+  // Save continuation data before closing
+  if (currentStudyTopicId) {
+    continuationEndSession(currentStudyTopicId);
+  }
   document.getElementById('study-overlay').classList.remove('open');
   currentStudyTopicId = null;
 }
@@ -6679,6 +6927,243 @@ function restoreICEItem(itemId, idx) {
 // Each pool is keyed to a context state. Messages: 5-10 words max.
 // Tone: firm, instructional, execution-focused.
 
+// ══════════════════════════════════════════════════════════════
+//  CONTINUATION SYSTEM
+// ══════════════════════════════════════════════════════════════
+
+// Session start time for current study view
+let _contSessionStart = null;
+let _contScrollListener = null;
+
+function continuationStartSession(topicId) {
+  _contSessionStart = Date.now();
+
+  // Remove previous scroll listener
+  const overlay = document.getElementById('study-overlay');
+  if (_contScrollListener && overlay) {
+    overlay.removeEventListener('scroll', _contScrollListener);
+  }
+
+  // Track scroll depth as coverage proxy
+  _contScrollListener = () => {
+    const el = document.getElementById('study-overlay');
+    if (!el) return;
+    const scrolled = el.scrollTop;
+    const total = el.scrollHeight - el.clientHeight;
+    const pct = total > 0 ? Math.min(100, Math.round((scrolled / total) * 100)) : 0;
+    // Update coverage in real-time (debounced via direct write — no save here)
+    if (!STATE.continuationData) STATE.continuationData = {};
+    if (!STATE.continuationData[topicId]) STATE.continuationData[topicId] = {};
+    STATE.continuationData[topicId].coveragePct = pct;
+    STATE.continuationData[topicId].lastSection  = currentStudyMode || 'quick';
+  };
+
+  if (overlay) overlay.addEventListener('scroll', _contScrollListener, { passive: true });
+}
+
+function continuationEndSession(topicId) {
+  if (!STATE.continuationData) STATE.continuationData = {};
+  const existing = STATE.continuationData[topicId] || {};
+  const timeSpent = _contSessionStart ? Math.round((Date.now() - _contSessionStart) / 1000) : 0;
+  const topic = TOPIC_CONTENT[topicId];
+  const acc = getTopicAccuracy(topicId);
+
+  STATE.continuationData[topicId] = {
+    topicId,
+    topicName: topic ? topic.name : topicId,
+    lastSection: existing.lastSection || currentStudyMode || 'quick',
+    coveragePct: existing.coveragePct || 0,
+    timeSpent: (existing.timeSpent || 0) + timeSpent,
+    date: todayStr(),
+    // Mark complete if scrolled past 90% or studied in exam mode
+    completed: (existing.coveragePct || 0) >= 90 || currentStudyMode === 'exam',
+    needsReassignment: acc !== null && acc < 60 && (existing.coveragePct || 0) < 80,
+  };
+
+  // Remove old scroll listener
+  const overlay = document.getElementById('study-overlay');
+  if (_contScrollListener && overlay) {
+    overlay.removeEventListener('scroll', _contScrollListener);
+    _contScrollListener = null;
+  }
+  _contSessionStart = null;
+  saveState();
+}
+
+function renderContinuationCard() {
+  const card = document.getElementById('continuation-card');
+  if (!card) return;
+
+  const data = STATE.continuationData || {};
+  const today = todayStr();
+  const exam  = STATE.profile.exam;
+
+  // Find the most recent incomplete topic studied on a previous day
+  const candidates = Object.values(data).filter(d =>
+    d && !d.completed && d.date !== today && d.coveragePct > 5 && d.coveragePct < 90
+  );
+
+  if (candidates.length === 0) {
+    card.classList.remove('visible');
+    return;
+  }
+
+  // Pick the one with lowest coverage (most incomplete)
+  candidates.sort((a, b) => a.coveragePct - b.coveragePct);
+  const item = candidates[0];
+
+  document.getElementById('cont-title').textContent = item.topicName || item.topicId;
+  document.getElementById('cont-sub').textContent =
+    `${item.coveragePct}% covered · last studied in ${item.lastSection || 'quick'} mode · ${Math.round((item.timeSpent||0)/60)} min spent`;
+  document.getElementById('cont-fill').style.width = item.coveragePct + '%';
+
+  card.dataset.topicId = item.topicId;
+  card.dataset.lastSection = item.lastSection || 'quick';
+  card.classList.add('visible');
+}
+
+function resumeFromContinuation() {
+  const card = document.getElementById('continuation-card');
+  if (!card) return;
+  const topicId     = card.dataset.topicId;
+  const lastSection = card.dataset.lastSection || 'quick';
+  if (!topicId) return;
+
+  card.classList.remove('visible');
+  openStudyView(topicId);
+  // Resume in the last mode the user was in
+  setTimeout(() => {
+    if (['quick','deep','exam','micro'].includes(lastSection)) {
+      setStudyMode(lastSection);
+    }
+  }, 300);
+}
+
+function dismissContinuation() {
+  const card = document.getElementById('continuation-card');
+  if (!card) return;
+  const topicId = card.dataset.topicId;
+  // Mark as dismissed today so it won't show again until next session
+  if (topicId && STATE.continuationData && STATE.continuationData[topicId]) {
+    STATE.continuationData[topicId].date = todayStr();
+    saveState();
+  }
+  card.classList.remove('visible');
+}
+
+// Adaptive reassignment: if topic incomplete AND accuracy <60%,
+// inject it as tomorrow's study task by boosting its priority in topicAccuracy
+function continuationAdaptiveReassign() {
+  const data = STATE.continuationData || {};
+  Object.values(data).forEach(item => {
+    if (!item || item.completed) return;
+    if (item.needsReassignment) {
+      // Lower the accuracy score to ensure it surfaces in weak topics
+      if (!STATE.topicAccuracy[item.topicId]) {
+        STATE.topicAccuracy[item.topicId] = { correct: 0, total: 1, lastSeen: Date.now() };
+      } else {
+        // Increment total without adding correct — artificially lowers accuracy
+        // so the adaptive engine picks it up. Only do this once.
+        if (!item.reassigned) {
+          STATE.topicAccuracy[item.topicId].total =
+            Math.max(STATE.topicAccuracy[item.topicId].total, 2);
+          item.reassigned = true;
+        }
+      }
+    }
+  });
+  saveState();
+}
+
+// ══════════════════════════════════════════════════════════════
+//  API KEY MANAGER
+// ══════════════════════════════════════════════════════════════
+
+function initAPIKeyManager() {
+  // Sync key into settings field
+  const settingsInput = document.getElementById('settings-api-input');
+  if (settingsInput && STATE.profile.apiKey) {
+    settingsInput.value = STATE.profile.apiKey;
+  }
+
+  // Render status in settings
+  renderAPIKeyStatus();
+
+  // Show first-time prompt if no key and user hasn't dismissed
+  if (!STATE.profile.apiKey && !STATE.apiKeyDismissed) {
+    setTimeout(() => openAPIModal(), 1200);
+  }
+}
+
+function renderAPIKeyStatus() {
+  const hasKey = !!(STATE.profile.apiKey && STATE.profile.apiKey.length > 10);
+
+  // Settings page status
+  const dot  = document.getElementById('settings-api-dot');
+  const text = document.getElementById('settings-api-status');
+  if (dot)  { dot.className  = 'api-status-dot ' + (hasKey ? 'connected' : 'offline'); }
+  if (text) { text.textContent = hasKey ? '✓ Connected — AI features active' : 'Not Connected — offline mode'; }
+  if (text) { text.style.color = hasKey ? 'var(--green)' : 'var(--muted2)'; }
+
+  // Modal status
+  const mDot  = document.getElementById('api-modal-dot');
+  const mText = document.getElementById('api-modal-status-text');
+  if (mDot)  { mDot.className  = 'api-status-dot ' + (hasKey ? 'connected' : 'offline'); }
+  if (mText) { mText.textContent = hasKey ? '✓ Connected — AI features active' : 'No API key — offline mode active'; }
+  if (mText) { mText.style.color = hasKey ? 'var(--green)' : 'var(--muted2)'; }
+}
+
+function openAPIModal() {
+  const el = document.getElementById('api-modal-overlay');
+  if (el) el.classList.add('open');
+  renderAPIKeyStatus();
+  const input = document.getElementById('api-modal-key-input');
+  if (input && STATE.profile.apiKey) input.value = STATE.profile.apiKey;
+}
+
+function closeAPIModal() {
+  const el = document.getElementById('api-modal-overlay');
+  if (el) el.classList.remove('open');
+  STATE.apiKeyDismissed = true;
+  saveState();
+}
+
+function saveAPIKeyFromModal() {
+  const input = document.getElementById('api-modal-key-input');
+  const key = (input ? input.value : '').trim();
+  if (!key) { alert('Please enter an API key, or tap "Offline Mode" to continue without one.'); return; }
+  STATE.profile.apiKey = key;
+  STATE.apiKeyDismissed = true;
+  saveState();
+  renderAPIKeyStatus();
+  closeAPIModal();
+  // Sync to settings input
+  const settingsInput = document.getElementById('settings-api-input');
+  if (settingsInput) settingsInput.value = key;
+}
+
+function saveAPIKeyFromSettings() {
+  const input = document.getElementById('settings-api-input');
+  const key = (input ? input.value : '').trim();
+  if (!key) { removeAPIKey(); return; }
+  STATE.profile.apiKey = key;
+  saveState();
+  renderAPIKeyStatus();
+  // Brief confirmation
+  const btn = input ? input.nextElementSibling : null;
+  if (btn) { const orig = btn.textContent; btn.textContent = '✓ Saved'; setTimeout(() => btn.textContent = orig, 1500); }
+}
+
+function removeAPIKey() {
+  STATE.profile.apiKey = '';
+  saveState();
+  renderAPIKeyStatus();
+  const settingsInput = document.getElementById('settings-api-input');
+  if (settingsInput) settingsInput.value = '';
+}
+
+// ══════════════════════════════════════════════════════════════
+
 const BRE_MESSAGES = {
   // New user, no data yet
   fresh: [
@@ -7808,6 +8293,10 @@ function getWeakTopics(exam) {
 initState();
 restoreICEQuestions();
 restoreLIETopics();
+// Continuation adaptive reassign on load (new day)
+if (typeof continuationAdaptiveReassign === 'function') {
+  try { continuationAdaptiveReassign(); } catch(e) {}
+}
 if (STATE.setup) {
   document.getElementById('setup-screen').style.display = 'none';
   launchApp();
