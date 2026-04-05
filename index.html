@@ -11,97 +11,9 @@
 <meta name="theme-color" content="#070c18">
 <meta name="description" content="PharmacyLE Mastery OS — Exam preparation system for PEBC, PSI, and KAPS">
 <title>PharmacyLE Mastery OS</title>
-
-<!-- PWA Manifest injected via JS (avoids data-URI browser restrictions) -->
-<script>
-(function(){
-  // Build icon as canvas-generated PNG blob URL
-  function makeIcon(size) {
-    try {
-      const c = document.createElement('canvas');
-      c.width = c.height = size;
-      const ctx = c.getContext('2d');
-      // Background
-      const r = size * 0.18;
-      ctx.beginPath();
-      ctx.moveTo(r,0); ctx.lineTo(size-r,0);
-      ctx.quadraticCurveTo(size,0,size,r);
-      ctx.lineTo(size,size-r);
-      ctx.quadraticCurveTo(size,size,size-r,size);
-      ctx.lineTo(r,size);
-      ctx.quadraticCurveTo(0,size,0,size-r);
-      ctx.lineTo(0,r);
-      ctx.quadraticCurveTo(0,0,r,0);
-      ctx.closePath();
-      ctx.fillStyle = '#070c18';
-      ctx.fill();
-      // Blue accent bar top
-      ctx.fillStyle = '#3b82f6';
-      ctx.fillRect(size*0.12, size*0.08, size*0.76, size*0.06);
-      // "Rx" text
-      ctx.fillStyle = '#3b82f6';
-      ctx.font = `900 ${Math.round(size*0.42)}px Arial Black, sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('Rx', size/2, size*0.52);
-      // Subtitle dots
-      ctx.fillStyle = '#1e2d45';
-      [0.35,0.5,0.65].forEach(x => {
-        ctx.beginPath();
-        ctx.arc(size*x, size*0.78, size*0.04, 0, Math.PI*2);
-        ctx.fill();
-      });
-      ctx.fillStyle = '#10b981';
-      ctx.beginPath();
-      ctx.arc(size*0.5, size*0.78, size*0.04, 0, Math.PI*2);
-      ctx.fill();
-      return c.toDataURL('image/png');
-    } catch(e) { return ''; }
-  }
-
-  const icon192 = makeIcon(192);
-  const icon512 = makeIcon(512);
-
-  const manifest = {
-    name: 'PharmacyLE Mastery OS',
-    short_name: 'PharmacyLE OS',
-    description: 'Exam preparation system for PEBC, PSI, and KAPS',
-    start_url: './',
-    display: 'standalone',
-    background_color: '#070c18',
-    theme_color: '#070c18',
-    orientation: 'portrait-primary',
-    icons: [
-      { src: icon192, sizes: '192x192', type: 'image/png' },
-      { src: icon512, sizes: '512x512', type: 'image/png', purpose: 'any' },
-      { src: icon512, sizes: '512x512', type: 'image/png', purpose: 'maskable' },
-    ]
-  };
-
-  const blob = new Blob([JSON.stringify(manifest)], {type:'application/manifest+json'});
-  const url  = URL.createObjectURL(blob);
-  const link = document.createElement('link');
-  link.rel  = 'manifest';
-  link.href = url;
-  document.head.appendChild(link);
-
-  // Apple touch icon
-  if (icon192) {
-    const al = document.createElement('link');
-    al.rel  = 'apple-touch-icon';
-    al.href = icon192;
-    document.head.appendChild(al);
-  }
-
-  // Favicon
-  const fl = document.createElement('link');
-  fl.rel  = 'icon';
-  fl.type = 'image/png';
-  fl.href = makeIcon(32);
-  document.head.appendChild(fl);
-})();
-</script>
-
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -1695,6 +1607,117 @@ body {
 
 /* scrollbar */
 ::-webkit-scrollbar { width: 0; }
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE DESIGN — TABLET & DESKTOP
+══════════════════════════════════════════════════════════════ */
+
+/* Tablet: 768px–1024px */
+@media (min-width: 768px) {
+  :root {
+    --nav-h: 68px;
+    --page-bottom: calc(var(--nav-h) + var(--safe-bottom) + 32px);
+  }
+  html, body { font-size: 16px; }
+  #app {
+    max-width: 800px;
+    margin: 0 auto;
+    box-shadow: 0 0 60px rgba(0,0,0,0.6);
+  }
+  .nav { max-width: 800px; left: 50%; transform: translateX(-50%); }
+  .page { padding: 20px 24px var(--page-bottom); }
+  .topbar { padding: 10px 20px 8px; }
+  .card { padding: 18px 20px; }
+  .section-head { font-size: 26px; }
+  .stats-grid { grid-template-columns: repeat(4, 1fr); }
+  .study-section { padding: 18px; }
+  .drug-table th, .drug-table td { padding: 10px 12px; }
+  .exec-statusbar { padding: 14px 20px; }
+  .exec-content { padding: 20px 24px 100px; }
+  .exec-action-bar { max-width: 800px; left: 50%; transform: translateX(-50%); }
+  #study-overlay, #exec-overlay, #guide-overlay,
+  #topic-browse-overlay, #eod-overlay { max-width: 800px; left: 50%; transform: translateX(-50%); right: auto; width: 100%; }
+  .modal { max-width: 800px; }
+  .eod-modal { max-width: 800px; margin: 0 auto; }
+  .api-modal { max-width: 800px; }
+}
+
+/* Desktop: > 1024px */
+@media (min-width: 1024px) {
+  :root {
+    --nav-h: 60px;
+  }
+  html, body {
+    font-size: 15px;
+    background: #030609; /* darker outer shell on desktop */
+  }
+  #app {
+    max-width: 520px;
+    border-radius: 24px;
+    overflow: hidden;
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    height: 90vh;
+    max-height: 920px;
+    box-shadow: 0 32px 120px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04);
+  }
+  .nav {
+    border-radius: 0 0 24px 24px;
+    max-width: 520px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  /* Overlays confined to app frame on desktop */
+  #study-overlay, #exec-overlay, #guide-overlay,
+  #topic-browse-overlay {
+    max-width: 520px;
+    left: 50%; right: auto;
+    transform: translateX(-50%);
+    border-radius: 24px;
+  }
+  #eod-overlay, .api-modal-overlay {
+    background: rgba(0,0,0,0.7);
+  }
+  .eod-modal, .api-modal {
+    max-width: 520px;
+    border-radius: var(--radius) var(--radius) 0 0;
+    margin: 0 auto;
+  }
+  .exec-action-bar {
+    max-width: 520px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 0 0 24px 24px;
+  }
+
+  /* Desktop outer background pattern */
+  body::before {
+    content: 'PharmacyLE Mastery OS';
+    position: fixed; top: 20px; left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-head); font-size: 13px; font-weight: 700;
+    color: rgba(59,130,246,0.3); letter-spacing: 2px; text-transform: uppercase;
+    pointer-events: none; white-space: nowrap; z-index: 0;
+  }
+
+  /* Navigation labels larger on desktop */
+  .nav-label { font-size: 11px; }
+  .nav-btn svg { width: 20px; height: 20px; }
+}
+
+/* Prevent layout shift on orientation change */
+@media (orientation: landscape) and (max-width: 768px) {
+  :root { --nav-h: 56px; }
+  .page { padding-top: 12px; }
+  .ring-wrap svg { width: 100px; height: 100px; }
+}
+
+/* High-DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .card { border-width: 0.5px; }
+  .task-item { border-width: 0.5px; }
+}
 </style>
 </head>
 <body>
@@ -1782,7 +1805,7 @@ body {
   <!-- PAGES -->
 
   <!-- ── MISSION TAB ── -->
-  <div class="page active" id="page-mission">
+  <div class="page active" id="page-mission" data-page="mission">
 
     <!-- BRE: Daily execution message — generated from user data -->
     <div class="bre-message-bar" id="bre-message-bar">
@@ -1879,16 +1902,16 @@ body {
   </div>
 
   <!-- ── PRACTICE TAB ── -->
-  <div class="page" id="page-practice">
+  <div class="page" id="page-practice" data-page="practice">
     <div class="section-head">Practice</div>
     <div class="section-sub">MCQs · Timed Sessions · Mock Exams</div>
 
     <div class="tab-pills" id="practice-tabs">
-      <div class="tab-pill active" onclick="setPracticeTab('daily')">Daily Quiz</div>
-      <div class="tab-pill" onclick="setPracticeTab('topic')">By Topic</div>
-      <div class="tab-pill" onclick="setPracticeTab('timed')">Timed</div>
-      <div class="tab-pill" onclick="setPracticeTab('mock')">Mock Exam</div>
-      <div class="tab-pill" onclick="setPracticeTab('ai')">AI Generate</div>
+      <div class="tab-pill active" data-action="practice-tab" data-tab="daily">Daily Quiz</div>
+      <div class="tab-pill" data-action="practice-tab" data-tab="topic">By Topic</div>
+      <div class="tab-pill" data-action="practice-tab" data-tab="timed">Timed</div>
+      <div class="tab-pill" data-action="practice-tab" data-tab="mock">Mock Exam</div>
+      <div class="tab-pill" data-action="practice-tab" data-tab="ai">AI Generate</div>
     </div>
 
     <!-- Daily Quiz Panel -->
@@ -1899,7 +1922,7 @@ body {
             <div style="font-size:40px;margin-bottom:8px;">🧠</div>
             <div style="font-family:var(--font-head);font-size:18px;font-weight:700;margin-bottom:6px;">Daily MCQ Block</div>
             <div style="font-size:13px;color:var(--muted2);margin-bottom:16px;">20 questions · mixed topics · exam-style</div>
-            <button class="btn btn-primary" onclick="startQuiz('daily',20)">Start Now</button>
+            <button class="btn btn-primary" data-action="start-daily-quiz">Start Now</button>
           </div>
         </div>
         <div id="quiz-active" style="display:none;">
@@ -1941,7 +1964,7 @@ body {
         <select class="setup-select" id="timed-topic-sel">
           <option value="all">All Topics (Mixed)</option>
         </select>
-        <button class="btn btn-primary" onclick="startQuiz('timed',40,60)">Start Timed Session</button>
+        <button class="btn btn-primary" data-action="start-timed">Start Timed Session</button>
       </div>
     </div>
 
@@ -1950,7 +1973,7 @@ body {
       <div class="card">
         <div class="card-title">Mock Exam</div>
         <div style="font-size:13px;color:var(--muted2);margin-bottom:12px;">Full simulation. 120 questions · 3 hours · PEBC style.</div>
-        <button class="btn btn-danger" onclick="startQuiz('mock',120,180)">Begin Mock Exam</button>
+        <button class="btn btn-danger" data-action="start-mock">Begin Mock Exam</button>
       </div>
     </div>
 
@@ -1973,16 +1996,16 @@ body {
   </div>
 
   <!-- ── OSCE TAB ── -->
-  <div class="page" id="page-osce">
+  <div class="page" id="page-osce" data-page="osce">
     <div class="section-head">OSCE</div>
     <div class="section-sub">Patient Scenarios · Timer · Marking Rubric</div>
 
     <div id="osce-home">
       <div class="tab-pills">
-        <div class="tab-pill active" onclick="setOSCECategory('counselling')">Counselling</div>
-        <div class="tab-pill" onclick="setOSCECategory('clinical')">Clinical</div>
-        <div class="tab-pill" onclick="setOSCECategory('ethics')">Ethics</div>
-        <div class="tab-pill" onclick="setOSCECategory('calculation')">Calculations</div>
+        <div class="tab-pill active" data-action="osce-tab" data-tab="counselling">Counselling</div>
+        <div class="tab-pill" data-action="osce-tab" data-tab="clinical">Clinical</div>
+        <div class="tab-pill" data-action="osce-tab" data-tab="ethics">Ethics</div>
+        <div class="tab-pill" data-action="osce-tab" data-tab="calculation">Calculations</div>
       </div>
       <div id="osce-scenario-list"></div>
       <button class="btn btn-outline" style="margin-top:4px" onclick="generateOSCEScenario()">🤖 AI Generate Scenario</button>
@@ -2028,7 +2051,7 @@ body {
   </div>
 
   <!-- ── INTEL TAB ── -->
-  <div class="page" id="page-intel">
+  <div class="page" id="page-intel" data-page="intel">
     <div class="section-head">Intelligence</div>
     <div class="section-sub">Weakness · Trends · Pass Readiness</div>
 
@@ -2080,15 +2103,15 @@ body {
   </div>
 
   <!-- ── LIBRARY TAB ── -->
-  <div class="page" id="page-library">
+  <div class="page" id="page-library" data-page="library">
     <div class="section-head">Library</div>
     <div class="section-sub">Resources · Audio · Study Packs</div>
 
     <div class="tab-pills">
-      <div class="tab-pill active" onclick="setLibTab('resources')">Resources</div>
-      <div class="tab-pill" onclick="setLibTab('audio')">Audio</div>
-      <div class="tab-pill" onclick="setLibTab('curriculum')">Curriculum</div>
-      <div class="tab-pill" onclick="setLibTab('settings')">Settings</div>
+      <div class="tab-pill active" data-action="lib-tab" data-tab="resources">Resources</div>
+      <div class="tab-pill" data-action="lib-tab" data-tab="audio">Audio</div>
+      <div class="tab-pill" data-action="lib-tab" data-tab="curriculum">Curriculum</div>
+      <div class="tab-pill" data-action="lib-tab" data-tab="settings">Settings</div>
     </div>
 
     <!-- Resources -->
@@ -2178,15 +2201,15 @@ body {
   </div>
 
   <!-- ── INTELLIGENT CONTENT ENGINE TAB ── -->
-  <div class="page" id="page-ice">
+  <div class="page" id="page-ice" data-page="ice">
     <div class="section-head">Content Engine</div>
     <div class="section-sub">Feed the system. It builds your exam from your materials.</div>
 
     <!-- ICE Tab nav -->
     <div class="tab-pills" id="ice-tabs">
-      <div class="tab-pill active" onclick="setICETab('ingest')">+ Ingest</div>
-      <div class="tab-pill" onclick="setICETab('library')">My Content</div>
-      <div class="tab-pill" onclick="setICETab('queue')">Mission Queue</div>
+      <div class="tab-pill active" data-action="ice-tab" data-tab="ingest">+ Ingest</div>
+      <div class="tab-pill" data-action="ice-tab" data-tab="library">My Content</div>
+      <div class="tab-pill" data-action="ice-tab" data-tab="queue">Mission Queue</div>
     </div>
 
     <!-- ── INGEST PANEL ── -->
@@ -2333,37 +2356,37 @@ The system will extract concepts, map to curriculum, generate MCQs, summaries, a
   </div>
 
   <nav class="nav">
-    <button class="nav-btn active" id="nav-mission" onclick="goPage('mission')">
+    <button class="nav-btn active" id="nav-mission" data-nav="mission">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
       </svg>
       <span class="nav-label">Mission</span>
     </button>
-    <button class="nav-btn" id="nav-practice" onclick="goPage('practice')">
+    <button class="nav-btn" id="nav-practice" data-nav="practice">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
       </svg>
       <span class="nav-label">Practice</span>
     </button>
-    <button class="nav-btn" id="nav-osce" onclick="goPage('osce')">
+    <button class="nav-btn" id="nav-osce" data-nav="osce">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
       </svg>
       <span class="nav-label">OSCE</span>
     </button>
-    <button class="nav-btn" id="nav-intel" onclick="goPage('intel')">
+    <button class="nav-btn" id="nav-intel" data-nav="intel">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
       </svg>
       <span class="nav-label">Intel</span>
     </button>
-    <button class="nav-btn" id="nav-library" onclick="goPage('library')">
+    <button class="nav-btn" id="nav-library" data-nav="library">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
       </svg>
       <span class="nav-label">Library</span>
     </button>
-    <button class="nav-btn" id="nav-ice" onclick="goPage('ice')" style="position:relative;">
+    <button class="nav-btn" id="nav-ice" data-nav="ice" style="position:relative;">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
       </svg>
@@ -3450,15 +3473,91 @@ function checkStreakAndMissed() {
 //  NAVIGATION
 // ══════════════════════════════════════════════════════════════
 
-function goPage(page) {
+// ── NAVIGATION SYSTEM ─────────────────────────────────────────
+let _execModeActive = false;
+
+function navigateTo(page) {
+  if (_execModeActive) return; // blocked during execution mode
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('page-' + page).classList.add('active');
-  document.getElementById('nav-' + page).classList.add('active');
-  if (page === 'intel') renderIntel();
+  const pageEl = document.getElementById('page-' + page);
+  const navEl  = document.getElementById('nav-' + page);
+  if (pageEl) pageEl.classList.add('active');
+  if (navEl)  navEl.classList.add('active');
+  if (page === 'intel')   renderIntel();
   if (page === 'library') renderLibrary();
-  if (page === 'ice') renderICEPage();
+  if (page === 'ice')     renderICEPage();
 }
+
+// Alias kept for all legacy inline calls throughout the app
+function goPage(page) { navigateTo(page); }
+
+function setExecutionMode(active) {
+  _execModeActive = active;
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    b.style.pointerEvents = active ? 'none' : '';
+    b.style.opacity       = active ? '0.3'  : '';
+  });
+}
+
+// ── GLOBAL CLICK HANDLER ──────────────────────────────────────
+document.addEventListener('click', function(e) {
+  // 1. Nav button via data-nav
+  const navBtn = e.target.closest('[data-nav]');
+  if (navBtn) {
+    e.preventDefault();
+    navigateTo(navBtn.dataset.nav);
+    return;
+  }
+
+  // 2. Practice sub-tab pills
+  const practiceTab = e.target.closest('[data-action="practice-tab"]');
+  if (practiceTab) {
+    setPracticeTab(practiceTab.dataset.tab);
+    return;
+  }
+
+  // 3. OSCE category tabs
+  const osceTab = e.target.closest('[data-action="osce-tab"]');
+  if (osceTab) {
+    setOSCECategory(osceTab.dataset.tab);
+    return;
+  }
+
+  // 4. Library tabs
+  const libTab = e.target.closest('[data-action="lib-tab"]');
+  if (libTab) {
+    setLibTab(libTab.dataset.tab);
+    return;
+  }
+
+  // 5. ICE tabs
+  const iceTab = e.target.closest('[data-action="ice-tab"]');
+  if (iceTab) {
+    setICETab(iceTab.dataset.tab);
+    return;
+  }
+
+  // 6. Mock Exam start
+  if (e.target.closest('[data-action="start-mock"]')) {
+    startQuiz('mock', 120, 180);
+    return;
+  }
+
+  // 7. Daily quiz start
+  if (e.target.closest('[data-action="start-daily-quiz"]')) {
+    startQuiz('daily', 20);
+    return;
+  }
+
+  // 8. Timed session start
+  if (e.target.closest('[data-action="start-timed"]')) {
+    const sel = document.getElementById('timed-topic-sel');
+    const topicId = sel ? sel.value : 'all';
+    startQuiz('timed', 40, 60, topicId === 'all' ? undefined : topicId);
+    return;
+  }
+});
 
 // ══════════════════════════════════════════════════════════════
 //  MISSION ENGINE
@@ -5519,8 +5618,8 @@ function startExecutionMode() {
   EXEC.active              = true;
   EXEC.execSelectedOption  = null;
 
-  // Lock navigation
-  document.querySelectorAll('.nav-btn').forEach(b => { b.style.pointerEvents='none'; b.style.opacity='0.3'; });
+  // Lock navigation via central function
+  setExecutionMode(true);
 
   document.getElementById('exec-overlay').classList.add('open');
   renderExecPhase();
@@ -5545,8 +5644,7 @@ function forceCloseExec() {
   clearInterval(EXEC.timer);
   EXEC.active = false;
   document.getElementById('exec-overlay').classList.remove('open');
-  // Restore navigation
-  document.querySelectorAll('.nav-btn').forEach(b => { b.style.pointerEvents=''; b.style.opacity=''; });
+  setExecutionMode(false);
   renderMission();
 }
 
@@ -8305,6 +8403,14 @@ if (STATE.setup) {
 const def = new Date(); def.setMonth(def.getMonth() + 6);
 document.getElementById('setup-date').value = def.toISOString().split('T')[0];
 
+// ── SERVICE WORKER REGISTRATION ───────────────────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js', { scope: './' })
+      .then(reg => console.log('SW registered:', reg.scope))
+      .catch(err => console.log('SW registration failed:', err));
+  });
+}
 </script>
 </body>
 </html>
